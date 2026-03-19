@@ -2,9 +2,9 @@ package com.yupi.springbootinit.controller;
 
 import com.yupi.springbootinit.common.BaseResponse;
 import com.yupi.springbootinit.common.ResultUtils;
+import com.yupi.springbootinit.manager.ISearchFacade;
 import com.yupi.springbootinit.model.dto.search.ISearchRequest;
 import com.yupi.springbootinit.model.vo.ISearchVO;
-import com.yupi.springbootinit.service.ISearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +28,7 @@ public class ISearchController {
 
 
     @Resource
-    private ISearchService iSearchService;
+    private ISearchFacade searchFacade;
 
     /**
      * 分页获取列表（封装类）
@@ -40,7 +40,7 @@ public class ISearchController {
     @PostMapping("/all")
     public BaseResponse<ISearchVO> iSearchAll(@RequestBody ISearchRequest iSearchRequest,
                                               HttpServletRequest request) {
-        ISearchVO isearch = iSearchService.isearch(iSearchRequest, request);
+        ISearchVO isearch = searchFacade.isearch(iSearchRequest, request);
 
         return  ResultUtils.success(isearch);
     }
