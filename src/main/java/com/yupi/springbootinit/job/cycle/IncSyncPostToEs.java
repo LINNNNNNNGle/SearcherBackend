@@ -1,16 +1,21 @@
 package com.yupi.springbootinit.job.cycle;
 
 import com.yupi.springbootinit.esdao.PostEsDao;
+import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.mapper.PostMapper;
 import com.yupi.springbootinit.model.dto.post.PostEsDTO;
 import com.yupi.springbootinit.model.entity.Post;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.collection.CollUtil;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import static com.yupi.springbootinit.common.ErrorCode.SYSTEM_ERROR;
 
 /**
  * 增量同步帖子到 es
@@ -18,8 +23,8 @@ import org.springframework.scheduling.annotation.Scheduled;
  * 
  *
  */
-// todo 取消注释开启任务
-//@Component
+// todo 消息队列（MQ）
+@Component
 @Slf4j
 public class IncSyncPostToEs {
 
@@ -50,7 +55,15 @@ public class IncSyncPostToEs {
         for (int i = 0; i < total; i += pageSize) {
             int end = Math.min(i + pageSize, total);
             log.info("sync from {} to {}", i, end);
-            postEsDao.saveAll(postEsDTOList.subList(i, end));
+            int finalI = i;
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    postEsDao.saveAll(postEsDTOList.subList(finalI, end));
+                } catch (Exception e) {
+                    new BusinessException(SYSTEM_ERROR);
+                }
+            });
+            CompletableFuture.allOf(future).join();
         }
         log.info("IncSyncPostToEs end, total {}", total);
     }
