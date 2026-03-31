@@ -1,6 +1,8 @@
 package com.yupi.springbootinit;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import com.alibaba.otter.canal.client.CanalConnectors;
@@ -13,10 +15,16 @@ import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
+import com.yupi.springbootinit.esdao.PostEsDao;
+import com.yupi.springbootinit.model.dto.post.PostEsDTO;
+
+import javax.annotation.Resource;
 
 
 public class SimpleCanalClientExample {
 
+    @Resource
+    private static PostEsDao postEsDao;
 
 public static void main(String args[]) {
     // 创建链接
@@ -83,10 +91,13 @@ private static void printEntry(List<Entry> entrys) {
             } else if (eventType == EventType.INSERT) {
                 printColumn(rowData.getAfterColumnsList());
             } else {
-                System.out.println("-------&gt; before");
-                printColumn(rowData.getBeforeColumnsList());
-                System.out.println("-------&gt; after");
-                printColumn(rowData.getAfterColumnsList());
+                List<Column> afterColumnsList = rowData.getAfterColumnsList();
+                Map<String,Object>map = new HashMap<String,Object>();
+                for(Column afterColumn : afterColumnsList){
+                    map.put(afterColumn.getName(), afterColumn.getValue());
+
+                }
+
             }
         }
     }

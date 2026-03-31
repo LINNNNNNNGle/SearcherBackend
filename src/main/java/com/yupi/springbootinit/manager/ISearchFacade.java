@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
  * 图片
  */
 
+
     @Slf4j
     @Component
     public class ISearchFacade {

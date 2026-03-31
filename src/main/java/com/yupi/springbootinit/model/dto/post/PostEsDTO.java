@@ -8,10 +8,12 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import javax.annotation.processing.Completion;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +76,12 @@ public class PostEsDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @CompletionField(maxInputLength = 100)
+    private Completion chinese;
+    @CompletionField(maxInputLength = 100)
+    private Completion fullPinyin;
+    @CompletionField(maxInputLength = 100)
+    private Completion headPinyin;
     /**
      * 对象转包装类
      *

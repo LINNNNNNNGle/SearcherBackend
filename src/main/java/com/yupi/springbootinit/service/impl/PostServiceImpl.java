@@ -1,5 +1,6 @@
 package com.yupi.springbootinit.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,6 +39,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -67,7 +69,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
-
+    
     @Override
     public void validPost(Post post, boolean add) {
         if (post == null) {
@@ -307,11 +309,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     @Override
     public Page<PostVO> listPostVOByPage(PostQueryRequest postQueryRequest, HttpServletRequest request) {
-        long current = postQueryRequest.getCurrent();
-        long pageSize = postQueryRequest.getPageSize();
-        Page<Post> postPage = this.page(new Page<>(current, pageSize),
-                this.getQueryWrapper(postQueryRequest));
-        return this.getPostVOPage(postPage, request);
+        return this.getPostVOPage(this.searchFromEs(postQueryRequest), request);
     }
 
 }

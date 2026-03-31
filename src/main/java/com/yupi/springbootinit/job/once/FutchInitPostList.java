@@ -1,6 +1,5 @@
 package com.yupi.springbootinit.job.once;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
